@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Bikes = require('./bikes.model')
 
 const ownersSchema = new mongoose.Schema({
   name: {
@@ -43,7 +44,7 @@ const ownersSchema = new mongoose.Schema({
     {
       type: mongoose.Types.ObjectId,
       required: [true, 'Bike is required'],
-      ref: 'bikes',
+      ref: Bikes,
     },
   ],
 })
@@ -53,7 +54,7 @@ const ownersSchema = new mongoose.Schema({
  * @returns Owner profile object
  */
 ownersSchema.methods.getProfile = async function () {
-  const owner = await this.populate('bikes').execPopulate().lean()
+  const owner = await this.populate('bikes').execPopulate()
 
   return owner
 }
