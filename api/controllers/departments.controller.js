@@ -13,6 +13,11 @@ exports.createDepartment = async (req, res) => {
 
 exports.getDepartment = async (req, res) => {
   try {
+    const department = await DepartmentsModel.findById(
+      req.params.departmentId
+    ).lean()
+
+    return res.status(200).json(department)
   } catch (err) {
     handleError(err, res)
   }
