@@ -1,8 +1,6 @@
-const UserModel = require('../models/users.model')
 const OwnersModel = require('../models/owners.model')
 const OfficersModel = require('../models/police_officers.model')
 const DepartmentsModel = require('../models/departments.model')
-const BikesModel = require('../models/bikes.model')
 const { compareSync, hashSync } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { handleError } = require('../utils')
