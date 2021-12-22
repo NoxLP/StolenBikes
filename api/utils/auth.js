@@ -15,7 +15,7 @@ exports.authOwners = (req, res, next) => {
 
       OwnersModel.findOne({ email: token.email })
         .then((owner) => {
-          res.locals.owner = { name: owner.name, email: owner.email }
+          res.locals.owner = owner
           next()
         })
         .catch((err) => handleError('owner not found', res, 404))
