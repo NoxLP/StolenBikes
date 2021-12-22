@@ -33,7 +33,7 @@ exports.authOfficers = (req, res, next) => {
 
       OfficersModel.findOne({ email: token.email })
         .then((officer) => {
-          res.locals.officer = { name: officer.name, email: officer.email }
+          res.locals.officer = officer
           next()
         })
         .catch((err) => handleError('owner not found', res, 404))
@@ -59,13 +59,19 @@ exports.authUser = (req, res, next) => {
         .catch((err) => {
           OfficersModel.findOne(email)
             .then((officer) => {
-              res.locals.officer = { name: officer.name, email: officer.email }
+              res.locals.officer = officer
               next()
             })
             .catch((err) => handleError('owner not found', res, 404))
         })
     })
   }
+}
+exports.officerIsAdmin = (req, res, next) => {
+  if (!res.locals.officer) handleError('user is not an officer', res, 403)
+
+  if (res.locals.officer.role == 'admin') next()
+  else handleError('officer is not an admin', res, 403)
 }
 
 exports.createToken = (user) => {
