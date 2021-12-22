@@ -1,5 +1,7 @@
 const UserModel = require('../models/users.model')
 const OwnersModel = require('../models/owners.model')
+const OfficersModel = require('../models/police_officers.model')
+const DepartmentsModel = require('../models/departments.model')
 const { compareSync, hashSync } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { handleError } = require('../utils')
@@ -30,6 +32,23 @@ exports.ownersLogin = async (req, res) => {
       return res.status(200).json({
         token: createToken(owner),
         user: await owner.getProfile(),
+      })
+    }
+
+    return res.status(403).json({ msg: 'wrong email/password' })
+  } catch (err) {
+    return handleError(err, res)
+  }
+}
+exports.officersLogin = async (req, res) => {
+  try {
+    const officer = await OfficersModel.findOne({ email: req.body.email })
+    if (!officer) return res.status(403).json({ msg: 'wrong email' })
+
+    if (officer && compareSync(req.body.password, officer.password)) {
+      return res.status(200).json({
+        token: createToken(officer),
+        user: await officer.getOfficerProfile(),
       })
     }
 
