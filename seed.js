@@ -20,8 +20,11 @@ seeder.connect(db, function () {
   })
 })
 
-const officerId = mongoose.Types.ObjectId()
-const departmentId = mongoose.Types.ObjectId()
+const robberyOfficerId = mongoose.Types.ObjectId()
+const robberyAdminId = mongoose.Types.ObjectId()
+const crimeOfficerId = mongoose.Types.ObjectId()
+const robberyDepartmentId = mongoose.Types.ObjectId()
+const crimeDepartmentId = mongoose.Types.ObjectId()
 
 const data = [
   {
@@ -41,10 +44,16 @@ const data = [
     model: 'departments',
     documents: [
       {
-        _id: departmentId,
+        _id: robberyDepartmentId,
         name: 'Robos distrito 1',
-        officers: [officerId],
+        officers: [robberyOfficerId, robberyAdminId],
         assignments: 'robberies',
+      },
+      {
+        _id: crimeDepartmentId,
+        name: 'Crimen distrito 1',
+        officers: [crimeOfficerId],
+        assignments: 'crimes',
       },
     ],
   },
@@ -52,14 +61,14 @@ const data = [
     model: 'police_officers',
     documents: [
       {
-        _id: officerId,
+        _id: robberyOfficerId,
         name: 'Jose',
         surname: 'Santana Dominguez',
         email: 'jose.santana@police.com',
         password: bcrypt.hashSync('123456', 10),
         police_license_number: '358467A',
         role: 'regular',
-        department: departmentId,
+        department: robberyDepartmentId,
       },
       {
         name: 'Pedro',
@@ -68,7 +77,17 @@ const data = [
         password: bcrypt.hashSync('123456', 10),
         police_license_number: '358621B',
         role: 'admin',
-        department: departmentId,
+        department: robberyDepartmentId,
+      },
+      {
+        _id: crimeOfficerId,
+        name: 'Antonio',
+        surname: 'Pérez Santana',
+        email: 'antonio.perez@police.com',
+        password: bcrypt.hashSync('123456', 10),
+        police_license_number: '354127G',
+        role: 'regular',
+        department: crimeDepartmentId,
       },
     ],
   },
