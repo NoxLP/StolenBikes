@@ -8,6 +8,7 @@ const bikesSchema = new mongoose.Schema({
   license_number: {
     type: String,
     required: [true, 'License number is required'],
+    unique: [true, 'This license number is registered'],
   },
   owner: {
     type: mongoose.Types.ObjectId,

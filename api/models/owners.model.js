@@ -43,10 +43,13 @@ const ownersSchema = new mongoose.Schema({
   bikes: [
     {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Bike is required'],
       ref: Bikes,
     },
   ],
+  createdAt: {
+    type: Number,
+    default: Date.now(), // Get a timestamp :)
+  },
 })
 
 /**

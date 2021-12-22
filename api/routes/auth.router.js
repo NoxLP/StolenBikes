@@ -6,7 +6,7 @@ const {
 } = require('../controllers/auth.controller')
 
 router
-  .post('/signup', signUp)
+  .post('/owners/signup', signUp)
   .post('/owners/login', ownersLogin)
   .post('/officers/login', officersLogin)
 

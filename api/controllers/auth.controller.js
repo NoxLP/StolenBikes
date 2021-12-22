@@ -2,31 +2,38 @@ const UserModel = require('../models/users.model')
 const OwnersModel = require('../models/owners.model')
 const OfficersModel = require('../models/police_officers.model')
 const DepartmentsModel = require('../models/departments.model')
+const BikesModel = require('../models/bikes.model')
 const { compareSync, hashSync } = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { handleError } = require('../utils')
 const { createToken } = require('../utils/auth')
 
-exports.signUp = (req, res) => {
-  const encryptedPwd = hashSync(req.body.password, 10)
-  console.log(req.body)
-  UserModel.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: encryptedPwd,
-  })
-    .then((user) => {
-      const data = { email: user.email, name: user.name }
-      const token = jwt.sign(data, process.env.SECRET, { expiresIn: '24h' })
+exports.signUp = async (req, res) => {
+  try {
+    const encryptedPwd = hashSync(req.body.password, 10)
 
-      res.status(200).json({ token: token, ...data })
+    const ownerData = {
+      name: req.body.name,
+      surname: req.body.surname,
+      email: req.body.email,
+      password: encryptedPwd,
+      mobile_number: req.body.mobile_number,
+      address: req.body.address,
+    }
+    const owner = await OwnersModel.create(ownerData)
+
+    return res.status(200).json({
+      token: createToken(owner),
+      user: await owner.getProfile(),
     })
-    .catch((err) => res.status(500).json(err))
+  } catch (err) {
+    handleError(err, res)
+  }
 }
 exports.ownersLogin = async (req, res) => {
   try {
     const owner = await OwnersModel.findOne({ email: req.body.email })
-    if (!owner) return res.status(403).json({ msg: 'wrong email' })
+    if (!owner) return handleError('wrong email', res, 403)
 
     if (owner && compareSync(req.body.password, owner.password)) {
       return res.status(200).json({
@@ -35,7 +42,7 @@ exports.ownersLogin = async (req, res) => {
       })
     }
 
-    return res.status(403).json({ msg: 'wrong email/password' })
+    return handleError('wrong email/password', res, 403)
   } catch (err) {
     return handleError(err, res)
   }
@@ -43,7 +50,7 @@ exports.ownersLogin = async (req, res) => {
 exports.officersLogin = async (req, res) => {
   try {
     const officer = await OfficersModel.findOne({ email: req.body.email })
-    if (!officer) return res.status(403).json({ msg: 'wrong email' })
+    if (!officer) return handleError('wrong email', res, 403)
 
     if (officer && compareSync(req.body.password, officer.password)) {
       return res.status(200).json({
@@ -52,7 +59,7 @@ exports.officersLogin = async (req, res) => {
       })
     }
 
-    return res.status(403).json({ msg: 'wrong email/password' })
+    return handleError('wrong email/password', res, 403)
   } catch (err) {
     return handleError(err, res)
   }
