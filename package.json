@@ -4,7 +4,8 @@
   "description": "## Bikes challenge",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node ./seed.js && nodemon index.js",
+    "seed": "node ./seed.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.4",
+    "mongoose-seed": "^0.6.0",
     "morgan": "^1.9.1",
     "nodemon": "^2.0.2"
   },
