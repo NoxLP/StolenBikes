@@ -56,7 +56,14 @@ const ownersSchema = new mongoose.Schema({
 ownersSchema.methods.getProfile = async function () {
   const owner = await this.populate('bikes').execPopulate()
 
-  return owner
+  return {
+    name: owner.name,
+    surname: owner.surname,
+    email: owner.email,
+    mobile_number: owner.mobile_number,
+    address: owner.address,
+    bikes: owner.bikes,
+  }
 }
 
 const ownersModel = mongoose.model('owners', ownersSchema)

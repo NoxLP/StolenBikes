@@ -45,6 +45,27 @@ const policeOfficersSchema = new mongoose.Schema({
   },
 })
 
+/**
+ * Get police officer profile to send to front-end
+ * @returns Police officer profile object
+ */
+policeOfficersSchema.methods.getProfile = async function () {
+  const officer = await this.populate('department').execPopulate()
+
+  return {
+    name: officer.name,
+    surname: officer.surname,
+    email: officer.email,
+    police_license_number: officer.police_license_number,
+    role: officer.role,
+    bike: officer.bike,
+    department: {
+      name: officer.department.name,
+      assignments: officer.department.assignments,
+    },
+  }
+}
+
 const policeOfficersModel = mongoose.model(
   'police_officers',
   policeOfficersSchema
