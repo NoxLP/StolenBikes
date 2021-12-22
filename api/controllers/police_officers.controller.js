@@ -19,7 +19,8 @@ exports.createOfficer = async (req, res) => {
     // later we need to add the officer to the department,
     // use a transaction so it all becomes an atomic operation
     const session = await mongoose.startSession()
-    await session.withTransaction(async () => {
+    session.startTransaction()
+    try {
       const encryptedPwd = hashSync(req.body.password, 10)
 
       const officerData = {
@@ -35,11 +36,16 @@ exports.createOfficer = async (req, res) => {
 
       department.officers.push(officer)
       await department.save()
-    })
-    session.endSession()
 
-    return res.status(200).json({ msg: 'new officer created' })
+      await session.commitTransaction()
+      return res.status(200).json({ msg: 'new officer created' })
+    } catch (err) {
+      handleError(err, res)
+    } finally {
+      session.endSession()
+    }
   } catch (err) {
+    // this should catch the transaction and session creation errors
     handleError(err, res)
   }
 }

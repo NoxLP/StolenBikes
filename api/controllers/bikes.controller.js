@@ -88,7 +88,7 @@ exports.reportStolenBike = async (req, res) => {
       session.endSession()
     }
   } catch (err) {
-    // this should catch the transaction errors
+    // this should catch the transaction and session creation errors
     handleError(err, res)
   }
 }
