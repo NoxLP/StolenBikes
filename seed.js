@@ -61,6 +61,15 @@ const data = [
         role: 'regular',
         department: departmentId,
       },
+      {
+        name: 'Pedro',
+        surname: 'Rodríguez Arcas',
+        email: 'pedro.rodriguez@police.com',
+        password: bcrypt.hashSync('123456', 10),
+        police_license_number: '358621B',
+        role: 'admin',
+        department: departmentId,
+      },
     ],
   },
 ]

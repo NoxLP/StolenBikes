@@ -28,6 +28,7 @@ const policeOfficersSchema = new mongoose.Schema({
   police_license_number: {
     type: String,
     required: [true, 'License number is required'],
+    unique: [true, 'This license number is registered'],
   },
   role: {
     type: String,
