@@ -40,7 +40,7 @@ const bikesSchema = new mongoose.Schema({
   },
   officer: {
     type: mongoose.Types.ObjectId,
-    ref: 'officers',
+    ref: 'police_officers',
   },
 })
 

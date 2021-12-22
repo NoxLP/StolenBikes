@@ -9,7 +9,7 @@ const departmentsSchema = new mongoose.Schema({
     {
       type: mongoose.Types.ObjectId,
       required: [true, 'Officer is required'],
-      ref: 'officers',
+      ref: 'police_officers',
     },
   ],
   assignments: {
