@@ -17,6 +17,10 @@ const departmentsSchema = new mongoose.Schema({
     enum: ['robberies', 'crimes', 'drugs'],
     required: [true, 'Assignment is required'],
   },
+  max_bike_cases: {
+    type: Number,
+    required: [true, 'Max bike cases is required'],
+  },
 })
 
 const departmentsModel = mongoose.model('departments', departmentsSchema)
