@@ -21,7 +21,6 @@ exports.reportStolenBike = async (req, res) => {
       let bike = await BikesModel.findOne({
         license_number: req.body.license_number,
       })
-      console.log('> first bike:', bike)
       if (!bike) {
         bike = new BikesModel(bikeData)
       } else if (bike && bike.status == 'solved') {
@@ -29,7 +28,7 @@ exports.reportStolenBike = async (req, res) => {
       } else {
         return handleError('already reported bike assigned', res)
       }
-      console.log('> second bike:', bike)
+
       // by not using res.locals.owner but retrieving it from the DB,
       // mongoose won't save the owner changes until the transaction is commited
       const owner = await OwnersModel.findById(res.locals.owner._id).session(
@@ -68,7 +67,6 @@ exports.reportStolenBike = async (req, res) => {
           },
         },
       ]).session(session)
-      console.log('> robofs: ', robberiesOfficers)
 
       if (robberiesOfficers && robberiesOfficers.length > 0) {
         console.log('> robOfs ok')
@@ -86,7 +84,6 @@ exports.reportStolenBike = async (req, res) => {
         })
           .limit(1)
           .session(session)
-        console.log(freeOfficers)
 
         if (freeOfficers && freeOfficers.length == 1) {
           // free officer found, assign
@@ -122,6 +119,13 @@ exports.reportStolenBike = async (req, res) => {
           return res
             .status(200)
             .json({ msg: 'bike created and assigned', bike })
+        } else {
+          // free officer NOT found
+          await Promise.all([bike.save(), owner.save()])
+          await session.commitTransaction()
+          return res
+            .status(200)
+            .json({ msg: 'bike created but NOT assigned', bike })
         }
       }
 
