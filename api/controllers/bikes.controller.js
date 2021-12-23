@@ -145,3 +145,12 @@ exports.reportStolenBike = async (req, res) => {
     handleError(err, res)
   }
 }
+
+exports.getBikesSearchDTOs = async (req, res) => {
+  try {
+    //bikes DTOs:
+    //{id, license_number, owner_name, date, status, officer_name, department_name }
+  } catch (err) {
+    handleError(err, res)
+  }
+}

@@ -1,6 +1,11 @@
 const router = require('express').Router()
-const { reportStolenBike } = require('../controllers/bikes.controller')
+const {
+  reportStolenBike,
+  getBikesSearchDTOs,
+} = require('../controllers/bikes.controller')
+const { authOwners, authOfficers } = require('../utils/auth') // Authenticated Route
 
-router.post('/', reportStolenBike)
+router.post('/', authOwners, reportStolenBike)
+router.get('/dtos', authOfficers, getBikesSearchDTOs)
 
 module.exports = router
