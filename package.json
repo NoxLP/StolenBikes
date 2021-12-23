@@ -4,7 +4,8 @@
   "description": "## Bikes challenge",
   "main": "index.js",
   "scripts": {
-    "start": "node ./seed.js && nodemon index.js",
+    "start": "node -r dotenv/config ./seed.js dotenv_config_path=env/.env && nodemon -r dotenv/config api/index.js dotenv_config_path=env/.env",
+    "start:dev": "node -r dotenv/config ./seed.js dotenv_config_path=env/dev.env && nodemon -r dotenv/config ./index.js dotenv_config_path=env/dev.env",
     "seed": "node ./seed.js"
   },
   "author": "",

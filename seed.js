@@ -1,9 +1,9 @@
 const seeder = require('mongoose-seed')
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
-require('dotenv').config()
 
-const db = process.env.MONGO_URL + process.env.MONGO_DB
+const db = process.env.MONGO_URL
+console.log(db)
 
 console.log('>>> Seeding...')
 
@@ -48,7 +48,7 @@ const data = [
         name: 'Robos distrito 1',
         officers: [robberyOfficerId, robberyAdminId],
         assignments: 'robberies',
-        max_bike_cases: 3,
+        max_bike_cases: 1,
       },
       {
         _id: crimeDepartmentId,
