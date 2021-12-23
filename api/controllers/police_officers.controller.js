@@ -6,23 +6,23 @@ const { hashSync } = require('bcrypt')
 
 exports.createOfficer = async (req, res) => {
   try {
-    // department is required
-    const department = await DepartmentsModel.findById(
-      res.locals.officer.department
-    )
-    if (!department) return handleError('department not found', res)
-
-    // only admins of same department can create new officers
-    if (department._id != req.body.department)
-      return handleError('incorrect department', res)
-
     // later we need to add the officer to the department,
     // use a transaction so it all becomes an atomic operation
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const encryptedPwd = hashSync(req.body.password, 10)
+      // only admins of same department can create new officers
+      console.log(res.locals.officer.department, req.body.department)
+      if (res.locals.officer.department != req.body.department)
+        return handleError('incorrect department', res)
 
+      // existing department is required
+      const department = await DepartmentsModel.findById(
+        res.locals.officer.department
+      ).session(session)
+      if (!department) return handleError('department not found', res)
+
+      const encryptedPwd = hashSync(req.body.password, 10)
       const officerData = {
         name: req.body.name,
         surname: req.body.surname,
@@ -32,7 +32,8 @@ exports.createOfficer = async (req, res) => {
         role: req.body.role,
         department: req.body.department,
       }
-      const officer = await OfficersModel.create(officerData)
+      const officer = new OfficersModel(officerData)
+      await officer.save()
 
       department.officers.push(officer)
       await department.save()
