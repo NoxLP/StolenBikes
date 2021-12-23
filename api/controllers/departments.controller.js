@@ -47,6 +47,15 @@ exports.updateDepartment = async (req, res) => {
 
 exports.removeDepartment = async (req, res) => {
   try {
+    const department = await DepartmentsModel.findById(req.params.departmentId)
+    if (!department) return handleError('department not found', res, 404)
+
+    // don't remove the department if it have any officers
+    if (department.officers.length > 0)
+      return handleError('can not remove a department with officers', res)
+
+    await DepartmentsModel.findByIdAndDelete(req.params.departmentId)
+    return res.status(200).json({ msg: 'department removed' })
   } catch (err) {
     handleError(err, res)
   }
