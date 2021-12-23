@@ -6,12 +6,14 @@
   "scripts": {
     "start": "node -r dotenv/config ./seed.js dotenv_config_path=env/.env && nodemon -r dotenv/config api/index.js dotenv_config_path=env/.env",
     "start:dev": "node -r dotenv/config ./seed.js dotenv_config_path=env/dev.env && nodemon -r dotenv/config ./index.js dotenv_config_path=env/dev.env",
+    "start:local": "concurrently \"run-rs\" \"nodemon -r dotenv/config ./index.js dotenv_config_path=env/local.env\"",
     "seed": "node ./seed.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "concurrently": "^6.5.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
@@ -28,6 +30,7 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "run-rs": "0.7.5"
   }
 }
