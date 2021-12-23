@@ -12,6 +12,12 @@ const departmentsSchema = new mongoose.Schema({
       ref: 'police_officers',
     },
   ],
+  bike_officers: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: 'police_officers',
+    },
+  ],
   assignments: {
     type: String,
     enum: ['robberies', 'crimes', 'drugs'],

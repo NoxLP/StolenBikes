@@ -25,6 +25,21 @@ exports.getDepartment = async (req, res) => {
 
 exports.updateDepartment = async (req, res) => {
   try {
+    // officers shouldn't be able to change department through this endpoint
+    // see endpoint at officers resource
+    const department = await DepartmentsModel.findByIdAndUpdate(
+      req.params.departmentId,
+      {
+        name: req.body.name,
+        assignments: req.body.assignments,
+        max_bike_cases: req.body.max_bike_cases,
+      },
+      {
+        returnDocument: 'after',
+      }
+    ).lean()
+
+    return res.status(200).json({ msg: 'department updated' })
   } catch (err) {
     handleError(err, res)
   }
