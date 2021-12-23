@@ -20,11 +20,11 @@ seeder.connect(db, function () {
   })
 })
 
-const robberyOfficerId = mongoose.Types.ObjectId()
-const robberyAdminId = mongoose.Types.ObjectId()
-const crimeOfficerId = mongoose.Types.ObjectId()
-const robberyDepartmentId = mongoose.Types.ObjectId()
-const crimeDepartmentId = mongoose.Types.ObjectId()
+const robberyOfficerId = mongoose.Types.ObjectId('61c4ae1692dc294b7a6a59af')
+const robberyAdminId = mongoose.Types.ObjectId('61c4ae1892dc294b7a6a59c3')
+const crimeOfficerId = mongoose.Types.ObjectId('61c4ae1692dc294b7a6a59b1')
+const robberyDepartmentId = mongoose.Types.ObjectId('61c4ae1692dc294b7a6a59b2')
+const crimeDepartmentId = mongoose.Types.ObjectId('61c4ae1692dc294b7a6a59b3')
 
 const data = [
   {
@@ -73,6 +73,7 @@ const data = [
         department: robberyDepartmentId,
       },
       {
+        _id: robberyAdminId,
         name: 'Pedro',
         surname: 'Rodríguez Arcas',
         email: 'pedro.rodriguez@police.com',
@@ -83,9 +84,9 @@ const data = [
       },
       {
         _id: crimeOfficerId,
-        name: 'Antonio',
+        name: 'María',
         surname: 'Pérez Santana',
-        email: 'antonio.perez@police.com',
+        email: 'maria.perez@police.com',
         password: bcrypt.hashSync('123456', 10),
         police_license_number: '354127G',
         role: 'regular',
