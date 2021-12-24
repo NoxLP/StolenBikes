@@ -69,13 +69,10 @@ exports.reportStolenBike = async (req, res) => {
       ]).session(session)
 
       if (robberiesOfficers && robberiesOfficers.length > 0) {
-        console.log('> robOfs ok')
         // get first free officer within robberies officers
         const officersIds = robberiesOfficers[0].officers.map((id) => {
-          console.log(id)
           return new mongoose.Types.ObjectId(id)
         })
-        console.log('> ids: ', officersIds)
         const freeOfficers = await OfficersModel.find({
           _id: {
             $in: officersIds,
@@ -94,7 +91,6 @@ exports.reportStolenBike = async (req, res) => {
             firstFreeOfficer.department
           ).session(session)
 
-          console.log('> firstFreeOfficer: ', firstFreeOfficer)
           firstFreeOfficer.bike = bike._id
 
           // set bike officer and status
@@ -146,10 +142,187 @@ exports.reportStolenBike = async (req, res) => {
   }
 }
 
+/**
+ * Build an object to use as search parameter in mongoose query when
+ * user do not ask to search by owner or officer
+ * @param {Object} query ExpresJs query object: req.query
+ * @returns Mongoose query search parameter object
+ */
+const buildSearchObject = (query) => {
+  const searchObject = {}
+  if (query['license-number'])
+    searchObject.license_number = query['license-number']
+  if (query.color) searchObject.color = query.color
+  if (query.type) searchObject.type = query.type
+  if (query.date) searchObject.date = query.date
+  if (query.address) searchObject.address = query.address
+  if (query.status) searchObject.status = query.status
+
+  return searchObject
+}
+/**
+ * Builds bike data transfer object out of a populated bike mongoose object
+ * @param {Object} bike Populated bike model
+ * @returns Bike data transfer object
+ */
+const buildBikeDTO = (bike) => {
+  // - bikes data transfer objects:
+  // {id, license_number, owner_id, owner_name, date,
+  // status, officer_id, officer_name, department_id, department_name }
+  const DTO = {
+    id: bike._id,
+    license_number: bike.license_number,
+    owner_id: bike.owner._id,
+    owner_name: bike.owner.name,
+    date: bike.date,
+    status: bike.status,
+  }
+  if (bike.officer) {
+    DTO.officer_id = bike.officer._id
+    DTO.officer_name = bike.officer.name
+    DTO.department_id = bike.officer.department._id
+    DTO.department_name = bike.officer.department.name
+  }
+
+  return DTO
+}
+/**
+ * Do bikes search query to database when user ask to search by owner
+ * and returns an array of the found bikes
+ * @param {Object} query ExpresJs query object: req.query
+ * @returns Array of BikesModel
+ */
+const findBikesByOwnerAsync = async (query, limit, skip) => {
+  try {
+    const queryName = query['owner-name'] ? 'name' : 'surname'
+    const owners = await OwnersModel.find(
+      {
+        [queryName]: query[`owner-${queryName}`],
+      },
+      { name: 1 }
+    )
+      .populate('bikes')
+      .populate({
+        path: 'bikes',
+        populate: {
+          path: 'officer',
+          select: 'name',
+          populate: {
+            path: 'department',
+            select: 'name',
+          },
+        },
+      })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+
+    const bikes = owners.reduce((acc, currentOwner) => {
+      const bikes = currentOwner.bikes.map((bike) => ({
+        ...bike,
+        owner: { _id: currentOwner._id, name: currentOwner.name },
+      }))
+      return [...acc, ...bikes]
+    }, [])
+
+    return bikes
+  } catch (err) {
+    throw err
+  }
+}
+/**
+ * Do bikes search query to database when user ask to search by officer
+ * and returns an array of the found bikes
+ * @param {Object} query ExpresJs query object: req.query
+ * @returns Array of BikesModel
+ */
+const findBikesByOfficerAsync = async (query, limit, skip) => {
+  try {
+    const officers = await OfficersModel.find(
+      {
+        name: query['officer-name'],
+      },
+      { name: 1 }
+    )
+      .populate({
+        path: 'department',
+        select: 'name',
+      })
+      .populate('bike')
+      .populate({
+        path: 'bike',
+        populate: {
+          path: 'owner',
+          select: 'name',
+        },
+      })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+
+    const bikes = officers.reduce((acc, currentOfficer) => {
+      const bike = {
+        ...currentOfficer.bike,
+        officer: {
+          _id: currentOfficer._id,
+          name: currentOfficer.name,
+          department: {
+            _id: currentOfficer.department._id,
+            name: currentOfficer.department.name,
+          },
+        },
+      }
+      return [...acc, bike]
+    }, [])
+
+    return bikes
+  } catch (err) {
+    throw err
+  }
+}
 exports.getBikesSearchDTOs = async (req, res) => {
   try {
-    //bikes DTOs:
-    //{id, license_number, owner_name, date, status, officer_name, department_name }
+    // - query
+    // limit, page, license-number, color, type, owner-name, owner-surname,
+    //   date, address, status, officer-name
+    let limit, skip
+    if (!req.query.limit) {
+      limit = 0
+      skip = 0
+    } else if (!req.query.page) {
+      limit = req.query.limit
+      skip = 0
+    } else {
+      limit = req.query.limit
+      skip = req.query.page * (limit - 1)
+    }
+
+    let bikes
+    if (req.query['owner-name'] || req.query['owner-surname']) {
+      bikes = await findBikesByOwnerAsync(req.query, limit, skip)
+    } else if (req.query['officer-name']) {
+      bikes = await findBikesByOfficerAsync(req.query, limit, skip)
+    } else {
+      const searchObject = buildSearchObject(req.query)
+
+      bikes = await BikesModel.find(searchObject)
+        .populate({ path: 'owner', select: 'name' })
+        .populate({
+          path: 'officer',
+          select: 'name',
+          populate: {
+            path: 'department',
+            select: 'name',
+          },
+        })
+        .skip(skip)
+        .limit(limit)
+    }
+
+    if (!bikes || bikes.length == 0) return res.status(200).json({ bikes: [] })
+    const bikesDTOs = bikes.map((bike) => buildBikeDTO(bike))
+
+    return res.status(200).json({ bikes: bikesDTOs })
   } catch (err) {
     handleError(err, res)
   }
