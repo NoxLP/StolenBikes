@@ -190,6 +190,8 @@ const buildBikeDTO = (bike) => {
  * Do bikes search query to database when user ask to search by owner
  * and returns an array of the found bikes
  * @param {Object} query ExpresJs query object: req.query
+ * @param {Number} limit Pagination. Max number of objects to return
+ * @param {Number} skip Pagination. Number of objects to skip (page * (limit-1))
  * @returns Array of BikesModel
  */
 const findBikesByOwnerAsync = async (query, limit, skip) => {
@@ -234,6 +236,8 @@ const findBikesByOwnerAsync = async (query, limit, skip) => {
  * Do bikes search query to database when user ask to search by officer
  * and returns an array of the found bikes
  * @param {Object} query ExpresJs query object: req.query
+ * @param {Number} limit Pagination. Max number of objects to return
+ * @param {Number} skip Pagination. Number of objects to skip (page * (limit-1))
  * @returns Array of BikesModel
  */
 const findBikesByOfficerAsync = async (query, limit, skip) => {
@@ -323,6 +327,29 @@ exports.getBikesSearchDTOs = async (req, res) => {
     const bikesDTOs = bikes.map((bike) => buildBikeDTO(bike))
 
     return res.status(200).json({ bikes: bikesDTOs })
+  } catch (err) {
+    handleError(err, res)
+  }
+}
+
+exports.getBikeById = async (req, res) => {
+  try {
+    const bike = await BikesModel.findById(req.params.bikeId)
+      .populate('owner', '-password -bikes')
+      .populate({
+        path: 'officer',
+        select: '-password -role -bike',
+        populate: {
+          path: 'department',
+          select: 'name assignments',
+        },
+      })
+      .lean()
+    const department = { ...bike.officer.department }
+    delete bike.officer.department
+    bike.department = department
+
+    return res.status(200).json({ bike })
   } catch (err) {
     handleError(err, res)
   }
