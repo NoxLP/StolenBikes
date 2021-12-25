@@ -84,32 +84,7 @@ exports.reportStolenBike = async (req, res) => {
 
         if (freeOfficers && freeOfficers.length == 1) {
           // free officer found, assign
-          const firstFreeOfficer = freeOfficers[0]
-
-          // call DB to get department but don't wait here
-          let department = DepartmentsModel.findById(
-            firstFreeOfficer.department
-          ).session(session)
-
-          firstFreeOfficer.bike = bike._id
-
-          // set bike officer and status
-          bike.officer = firstFreeOfficer._id
-          bike.status = 'assigned'
-
-          // wait DB and add to department's bike officers
-          // TODO: this should be able to be done onthe below Promise.all in an arrow funtion f.i.
-          //    but it won't work for some reason... study it if I have the time for it
-          department = await department
-          department.bike_officers.push(firstFreeOfficer)
-
-          // save all
-          await Promise.all([
-            firstFreeOfficer.save(),
-            department.save(),
-            bike.save(),
-            owner.save(),
-          ])
+          await freeOfficers[0].assignBikeToOfficer(bike, session, owner)
 
           await session.commitTransaction()
           return res
@@ -132,7 +107,7 @@ exports.reportStolenBike = async (req, res) => {
         .status(200)
         .json({ msg: 'bike created but NOT assigned', bike })
     } catch (err) {
-      handleError(err, res)
+      throw err
     } finally {
       session.endSession()
     }
@@ -351,6 +326,41 @@ exports.getBikeById = async (req, res) => {
 
     return res.status(200).json({ bike })
   } catch (err) {
+    handleError(err, res)
+  }
+}
+
+exports.caseSolved = async (req, res) => {
+  try {
+    // use a transaction so it all becomes an atomic operation
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+    try {
+      const bike = await BikesModel.findById(req.params.bikeId).session(session)
+      if (!bike || bike.status !== 'assigned')
+        return handleError('wrong bike or wrong status', res, 404)
+
+      const officer = await OfficersModel.findById(bike.officer).session(
+        session
+      )
+      bike.officer = null
+      bike.status = 'solved'
+      await bike.save()
+
+      const newAssignedBike = await officer.findUnassignedBikeOrFreeOfficer(
+        session
+      )
+
+      await session.commitTransaction()
+      return res.status(200).json({ newAssignedBike })
+    } catch (err) {
+      throw err
+    } finally {
+      session.endSession()
+    }
+  } catch (err) {
+    // this should catch the transaction and session creation errors
     handleError(err, res)
   }
 }
