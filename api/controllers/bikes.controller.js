@@ -13,19 +13,28 @@ exports.reportStolenBike = async (req, res) => {
     session.startTransaction()
 
     try {
-      const bikeData = {
-        ...req.body,
-        owner: res.locals.owner._id,
-      }
       // if it's a new bike, create it (upsert)
       // if the bike already exists AND is solved, update to unassigned
       let bike = await BikesModel.findOne({
         license_number: req.body.license_number,
       })
       if (!bike) {
-        bike = new BikesModel(bikeData)
+        bike = new BikesModel({
+          ...req.body,
+          owner: res.locals.owner._id,
+        })
       } else if (bike && bike.status == 'solved') {
         bike.status = 'unassigned'
+        bike.date = req.body.date ?? bike.date
+        bike.owner =
+          res.locals.owner._id !== bike.owner
+            ? res.locals.owner._id
+            : bike.owner
+        bike.color = req.body.color ?? bike.color
+        bike.description = req.body.description ?? bike.description
+        bike.theft_desc = req.body.theft_desc ?? bike.theft_desc
+        bike.last_known_address =
+          req.body.last_known_address ?? bike.last_known_address
       } else {
         return handleError('already reported bike assigned', res)
       }
