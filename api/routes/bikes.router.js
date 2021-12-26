@@ -5,11 +5,11 @@ const {
   getBikeById,
   caseSolved,
 } = require('../controllers/bikes.controller')
-const { authOwners, authOfficers } = require('../utils/auth') // Authenticated Route
+const { authOwners, authOfficers, authAnyUser } = require('../utils/auth') // Authenticated Route
 
 router
   .get('/dtos', authOfficers, getBikesSearchDTOs)
-  .get('/:bikeId', authOfficers, getBikeById)
+  .get('/:bikeId', authAnyUser, getBikeById)
 
 router.post('/', authOwners, reportStolenBike)
 
