@@ -3,7 +3,9 @@ const OfficersModel = require('../models/police_officers.model')
 const jwt = require('jsonwebtoken')
 const { handleError } = require('./index')
 
-// Authenticate Middleware
+/**
+ * Authenticate Middleware for bike owners
+ */
 exports.authOwners = (req, res, next) => {
   if (!req.headers.token) {
     handleError('No Token found', res, 403)
@@ -22,6 +24,9 @@ exports.authOwners = (req, res, next) => {
     })
   }
 }
+/**
+ * Authenticate Middleware for bike police officers
+ */
 exports.authOfficers = (req, res, next) => {
   if (!req.headers.token) {
     handleError('No Token found', res, 403)
@@ -40,7 +45,10 @@ exports.authOfficers = (req, res, next) => {
     })
   }
 }
-exports.authUser = (req, res, next) => {
+/**
+ * Authenticate Middleware for bike owners OR police officers
+ */
+exports.authAnyUser = (req, res, next) => {
   if (!req.headers.token) {
     handleError('No Token found', res, 403)
   } else {
@@ -67,6 +75,9 @@ exports.authUser = (req, res, next) => {
     })
   }
 }
+/**
+ * Authenticate Middleware for ADMIN police officers. Run after authOfficers middleware
+ */
 exports.officerIsAdmin = (req, res, next) => {
   if (!res.locals.officer) handleError('user is not an officer', res, 403)
 

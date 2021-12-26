@@ -87,18 +87,31 @@ Stolen bikes
 <br/>
 Bikes data transfer objects to list bikes:
 
-| Field           | Type         | Description                                                         |
+<br/>
+
+**Officers search DTO**
+| Field | Type | Description |
 | --------------- | ------------ | ------------------------------------------------------------------- |
-| id              | ObjectId     | Id of original bike                                                 |
-| license_number  | string       | Bike license number                                                 |
-| owner_id        | ObjectId     | Reporting owner id                                                  |
-| owner_name      | string       | Reporting owner name                                                |
-| date            | date         | Bike robbery date                                                   |
-| status          | string(enum) | Bike robbery case status: [ unassigned \| assigned \| solved ]      |
-| officer_id      | ObjectId     | Assigned officer id if an officer have been assigned                |
-| officer_name    | string       | Assigned officer name if an officer have been assigned              |
-| department_id   | ObjectId     | Assigned officer's department id if an officer have been assigned   |
-| department_name | string       | Assigned officer's department name if an officer have been assigned |
+| \_id | ObjectId | Id of original bike |
+| license_number | string | Bike license number |
+| owner_id | ObjectId | Reporting owner id |
+| owner_name | string | Reporting owner name |
+| date | date | Bike robbery date |
+| status | string(enum) | Bike robbery case status: [ unassigned \| assigned \| solved ] |
+| officer_id | ObjectId | Assigned officer id if an officer have been assigned |
+| officer_name | string | Assigned officer name if an officer have been assigned |
+| department_id | ObjectId | Assigned officer's department id if an officer have been assigned |
+| department_name | string | Assigned officer's department name if an officer have been assigned |
+
+<br/>
+
+**Owners search DTO**
+| Field | Type | Description |
+| --------------- | ------------ | ------------------------------------------------------------------- |
+| \_id | ObjectId | Id of original bike |
+| status | string(enum) | Bike robbery case status: [ unassigned \| assigned \| solved ] |
+| date | date | Bike robbery date |
+| license_number | string | Bike license number |
 
 <br/>
 
@@ -152,6 +165,14 @@ All API endpoints prepended with `/api/`
 
 <br/>
 
+### **Owners:**
+
+| METHOD | ENDPOINT      | TOKEN | DESCRIPTION                          | POST BODY | PARAMS | QUERY | RETURNS                                        |
+| ------ | ------------- | ----- | ------------------------------------ | --------- | ------ | ----- | ---------------------------------------------- |
+| GET    | /owners/bikes | owner | Get authenticated owner's bikes DTOs | -         | -      | -     | `bikes: [{_id, status, date, license_number}]` |
+
+<br/>
+
 ### **Officers:**
 
 | METHOD | ENDPOINT             | TOKEN                | DESCRIPTION                                                                                                                                                                                                                                                                                                                                                                                                                             | POST BODY                                                                           | PARAMS      | QUERY | RETURNS                      |
@@ -163,12 +184,12 @@ All API endpoints prepended with `/api/`
 
 ### **Bikes:**
 
-| METHOD | ENDPOINT                | TOKEN   | DESCRIPTION                                                                                                                                          | POST BODY                                                                               | PARAMS   | QUERY                                                                                                                              | RETURNS                                                                                                                                                                                                                                                                     |
-| ------ | ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | /bikes/:bikeId          | officer | Get bike data by id                                                                                                                                  | -                                                                                       | `bikeId` | -                                                                                                                                  | `bike: { _id, type, status, date, license_number, color, theft_desc, last_known_address, owner: { _id, created_at, name, surname, email, mobile_number, address }, officer: { _id, name, surname, email, police_license_number }, department: { _id, name, assignments } }` |
-| GET    | /bikes/dtos             | officer | Search bikes by query params with pagination: `limit` is the number of items per page, `page` the requested page of items)                           | -                                                                                       | -        | `[ limit \| page \| license-number \| color \| type \| owner-name \| owner-surname \| date \| address \| status \| officer-name ]` | Bike DTO                                                                                                                                                                                                                                                                    |
-| POST   | /bikes                  | owner   | Report stolen bike                                                                                                                                   | Bike: `date, license_number, coloer, type, description, theft_desc, last_known_address` | -        | -                                                                                                                                  | `msg: 'bike created but NOT assigned'`; Reported bike                                                                                                                                                                                                                       |
-| PUT    | /bikes/resolved/:bikeId | officer | Set bike case as resolved. Automatically search and assign new case to the old assigned officer, if no new case is found, officer is setted as free. | -                                                                                       | `bikeId` | -                                                                                                                                  | `newAssignedBike: [bike \| null]`                                                                                                                                                                                                                                           |
+| METHOD | ENDPOINT                | TOKEN            | DESCRIPTION                                                                                                                                          | POST BODY                                                                               | PARAMS   | QUERY                                                                                                                              | RETURNS                                                                                                                                                                                                                                                                     |
+| ------ | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | /bikes/:bikeId          | officer \| owner | Get bike data by id                                                                                                                                  | -                                                                                       | `bikeId` | -                                                                                                                                  | `bike: { _id, type, status, date, license_number, color, theft_desc, last_known_address, owner: { _id, created_at, name, surname, email, mobile_number, address }, officer: { _id, name, surname, email, police_license_number }, department: { _id, name, assignments } }` |
+| GET    | /bikes/dtos             | officer          | Search bikes by query params with pagination: `limit` is the number of items per page, `page` the requested page of items)                           | -                                                                                       | -        | `[ limit \| page \| license-number \| color \| type \| owner-name \| owner-surname \| date \| address \| status \| officer-name ]` | Bike DTO                                                                                                                                                                                                                                                                    |
+| POST   | /bikes                  | owner            | Report stolen bike                                                                                                                                   | Bike: `date, license_number, coloer, type, description, theft_desc, last_known_address` | -        | -                                                                                                                                  | `msg: 'bike created but NOT assigned'`; Reported bike                                                                                                                                                                                                                       |
+| PUT    | /bikes/resolved/:bikeId | officer          | Set bike case as resolved. Automatically search and assign new case to the old assigned officer, if no new case is found, officer is setted as free. | -                                                                                       | `bikeId` | -                                                                                                                                  | `newAssignedBike: [bike \| null]`                                                                                                                                                                                                                                           |
 
 <br/>
 
