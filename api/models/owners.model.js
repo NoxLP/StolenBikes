@@ -46,9 +46,9 @@ const ownersSchema = new mongoose.Schema({
       ref: Bikes,
     },
   ],
-  createdAt: {
+  created_at: {
     type: Number,
-    default: Date.now(), // Get a timestamp :)
+    default: Date.now(),
   },
 })
 

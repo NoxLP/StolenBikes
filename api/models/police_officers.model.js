@@ -27,6 +27,7 @@ const policeOfficersSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password is required'],
   },
+  // this type of official data usually have a way to build it, so it have a possible validation
   police_license_number: {
     type: String,
     required: [true, 'License number is required'],
@@ -45,6 +46,10 @@ const policeOfficersSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     required: [true, 'Departments is required'],
     ref: 'departments',
+  },
+  created_at: {
+    type: Number,
+    default: Date.now(),
   },
 })
 
