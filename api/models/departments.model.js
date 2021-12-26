@@ -27,6 +27,10 @@ const departmentsSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Max bike cases is required'],
   },
+  created_at: {
+    type: Number,
+    default: Date.now(),
+  },
 })
 
 const departmentsModel = mongoose.model('departments', departmentsSchema)

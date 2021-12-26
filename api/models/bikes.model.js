@@ -5,6 +5,7 @@ const bikesSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Date is required'],
   },
+  // this type of official data usually have a way to build it, so it have a possible validation
   license_number: {
     type: String,
     required: [true, 'License number is required'],
@@ -42,6 +43,10 @@ const bikesSchema = new mongoose.Schema({
   officer: {
     type: mongoose.Types.ObjectId,
     ref: 'police_officers',
+  },
+  created_at: {
+    type: Number,
+    default: Date.now(),
   },
 })
 
