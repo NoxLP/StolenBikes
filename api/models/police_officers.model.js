@@ -141,7 +141,13 @@ policeOfficersSchema.methods.findUnassignedBikeOrFreeOfficer = async function (
       await this.assignBikeToOfficer(firstUnassignedBike[0], session)
       return firstUnassignedBike[0]
     } else {
-      await this.save()
+      // no unassigned bikes, remove this officer from department bike_officers
+      const department = await DepartmentsModel.findById(
+        this.department
+      ).session(session)
+      department.bike_officers.pull({ _id: this._id })
+
+      await Promise.all([this.save(), department.save()])
       return null
     }
   } catch (err) {
