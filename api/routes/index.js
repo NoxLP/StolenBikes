@@ -16,5 +16,8 @@ router.use('/departments', authOfficers, departmentsRouter)
 router.get('/whoami', authAnyUser, (req, res) => {
   res.send(`hi there! ${res.locals.user.name}`)
 })
+router.get('/status', function () {
+  return res.status(200).send("I'm alive and OK")
+})
 
 module.exports = router
