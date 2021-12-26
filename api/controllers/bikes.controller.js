@@ -4,6 +4,7 @@ const BikesModel = require('../models/bikes.model')
 const OfficersModel = require('../models/police_officers.model')
 const DepartmentsModel = require('../models/departments.model')
 const { handleError } = require('../utils')
+const { sendEmailToOwnerBikeStatusChanged } = require('../utils/emails')
 
 exports.reportStolenBike = async (req, res) => {
   try {
@@ -103,6 +104,9 @@ exports.reportStolenBike = async (req, res) => {
       // free officer NOT found
       await Promise.all([bike.save(), owner.save()])
       await session.commitTransaction()
+
+      // Just fire and forget the email
+      sendEmailToOwnerBikeStatusChanged(owner, bike)
       return res
         .status(200)
         .json({ msg: 'bike created but NOT assigned', bike })

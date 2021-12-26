@@ -7,14 +7,11 @@ async function sendEmailAsync(to, subject, htmlBody) {
       to: to,
       from: process.env.SENDGRID_EMAIL_FROM,
       subject: subject,
-      htmlBody,
+      html: htmlBody,
     }
     await sgMail.send(msg)
   } catch (error) {
-    console.error(error)
-
     if (error.response) {
-      console.error(error.response.body)
       throw error.response.body
     } else {
       throw error
@@ -24,6 +21,7 @@ async function sendEmailAsync(to, subject, htmlBody) {
 
 exports.sendEmailToOwnerBikeStatusChanged = async (owner, bike) => {
   try {
+    console.log('sendEmailToOwnerBikeStatusChanged')
     await sendEmailAsync(
       owner.email,
       'New information about your bike!',
@@ -33,13 +31,13 @@ exports.sendEmailToOwnerBikeStatusChanged = async (owner, bike) => {
         bike.license_number
       }</i></p>
 <br/>
-<p>You can check it out <a href="#">here</p>.
+<p>You can check it out <a href="#">here</a></p>.
 <br/>
 <p>Regards,</p>
 <p>The Police</p>
   `
     )
   } catch (err) {
-    throw err
+    console.log(err)
   }
 }
