@@ -15,6 +15,7 @@ mongoose.connect(
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
+    autoIndex: process.env.NODE_ENV == 'prod' ? false : true,
   },
   (err) => {
     if (err) {

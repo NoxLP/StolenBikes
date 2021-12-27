@@ -52,6 +52,9 @@ const ownersSchema = new mongoose.Schema({
   },
 })
 
+// compound text index
+ownersSchema.index({ name: 'text', surname: 'text' })
+
 /**
  * Get bike owner profile to send to front-end
  * @returns Owner profile object

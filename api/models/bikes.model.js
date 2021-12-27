@@ -65,5 +65,8 @@ const bikesSchema = new mongoose.Schema({
   },
 })
 
+// compound text index
+bikesSchema.index({ status: 'text' })
+
 const bikesModel = mongoose.model('bikes', bikesSchema)
 module.exports = bikesModel

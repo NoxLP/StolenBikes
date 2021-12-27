@@ -53,6 +53,9 @@ const policeOfficersSchema = new mongoose.Schema({
   },
 })
 
+// compound text index
+policeOfficersSchema.index({ name: 'text', surname: 'text' })
+
 /**
  * Get police officer profile to send to front-end
  * @returns Police officer profile object
