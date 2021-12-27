@@ -8,6 +8,7 @@ const morgan = require('morgan')
 const path = require('path')
 
 // NONGOOSE
+const AUTO_INDEX = process.env.NODE_ENV == 'prod' ? false : true
 mongoose.connect(
   process.env.MONGO_URL,
   {
@@ -15,7 +16,7 @@ mongoose.connect(
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    autoIndex: process.env.NODE_ENV == 'prod' ? false : true,
+    autoIndex: AUTO_INDEX,
   },
   (err) => {
     if (err) {
@@ -42,5 +43,7 @@ app.listen(PORT, (err) => {
   console.info('>'.repeat(40))
   console.info('💻  Server Live')
   console.info(`📡  PORT: http://localhost:${PORT}`)
+  console.info(`    Environment: ${process.env.NODE_ENV}`)
+  console.info(`    Mongo auto index: ${AUTO_INDEX}`)
   console.info('>'.repeat(40) + '\n')
 })

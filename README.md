@@ -57,16 +57,17 @@ Then:
 
 Bikes owners
 
-| Field         | Type   | Required    | Validation  | Default | Description                                   |
-| ------------- | ------ | ----------- | ----------- | ------- | --------------------------------------------- |
-| name          | string | yes         | -           | -       | Owner name                                    |
-| surname       | string | yes         | -           | -       | Owner surname                                 |
-| email         | string | yes(unique) | email       | -       | Owner auth email                              |
-| password      | string | yes         | -           | -       | Owner auth password                           |
-| mobile_number | string | yes(unique) | 8-12 digits | -       | Owner mobile number                           |
-| address       | string | yes         | -           | -       | Owner address                                 |
-| bikes         | Array  | no          | -           | -       | Reported bikes - ObjectId: Array - ref: Bikes |
-| created_at    | number | no          | -           | -       | Creation timestamp                            |
+| Field         | Type   | Required    | Validation  | Default | Description                                                                              |
+| ------------- | ------ | ----------- | ----------- | ------- | ---------------------------------------------------------------------------------------- |
+| name          | string | yes         | -           | -       | Owner name                                                                               |
+| surname       | string | yes         | -           | -       | Owner surname                                                                            |
+| search_names  | string | no          | -           | -       | Owner name + surname n-grams. Text index. Automatically setted on mongoose `pre('save')` |
+| email         | string | yes(unique) | email       | -       | Owner auth email                                                                         |
+| password      | string | yes         | -           | -       | Owner auth password                                                                      |
+| mobile_number | string | yes(unique) | 8-12 digits | -       | Owner mobile number                                                                      |
+| address       | string | yes         | -           | -       | Owner address                                                                            |
+| bikes         | Array  | no          | -           | -       | Reported bikes - ObjectId: Array - ref: Bikes                                            |
+| created_at    | number | no          | -           | -       | Creation timestamp                                                                       |
 
 <br/>
 
@@ -124,17 +125,18 @@ Bikes data transfer objects to list bikes:
 
 Police officers
 
-| Field                 | Type         | Required    | Validation | Default | Description                                            |
-| --------------------- | ------------ | ----------- | ---------- | ------- | ------------------------------------------------------ |
-| name                  | string       | yes         | -          | -       | Officer name                                           |
-| surname               | string       | yes         | -          | -       | Officer surname                                        |
-| email                 | string       | yes(unique) | email      | -       | Officer auth email                                     |
-| password              | string       | yes         | -          | -       | Officer auth password                                  |
-| police_license_number | string       | yes(unique) | -          | -       | Officer license number                                 |
-| role                  | string(enum) | no          | -          | regular | Officer role as API user: [ regular \| admin ]         |
-| bike                  | ObjectId     | no          | -          | -       | Stolen bike case assigned to this officer - ref: bikes |
-| department            | ObjectId     | yes         | -          | -       | Officer department - ref: departments                  |
-| created_at            | number       | no          | -          | -       | Creation timestamp                                     |
+| Field                 | Type         | Required    | Validation | Default | Description                                                                                |
+| --------------------- | ------------ | ----------- | ---------- | ------- | ------------------------------------------------------------------------------------------ |
+| name                  | string       | yes         | -          | -       | Officer name                                                                               |
+| surname               | string       | yes         | -          | -       | Officer surname                                                                            |
+| search_names          | string       | no          | -          | -       | Officer name + surname n-grams. Text index. Automatically setted on mongoose `pre('save')` |
+| email                 | string       | yes(unique) | email      | -       | Officer auth email                                                                         |
+| password              | string       | yes         | -          | -       | Officer auth password                                                                      |
+| police_license_number | string       | yes(unique) | -          | -       | Officer license number                                                                     |
+| role                  | string(enum) | no          | -          | regular | Officer role as API user: [ regular \| admin ]                                             |
+| bike                  | ObjectId     | no          | -          | -       | Stolen bike case assigned to this officer - ref: bikes                                     |
+| department            | ObjectId     | yes         | -          | -       | Officer department - ref: departments                                                      |
+| created_at            | number       | no          | -          | -       | Creation timestamp                                                                         |
 
 <br/>
 
