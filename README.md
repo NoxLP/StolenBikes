@@ -74,19 +74,20 @@ Bikes owners
 
 Stolen bikes
 
-| Field              | Type         | Required    | Validation | Default    | Description                                                    |
-| ------------------ | ------------ | ----------- | ---------- | ---------- | -------------------------------------------------------------- |
-| date               | date         | yes         | -          | -          | Bike robbery date                                              |
-| license_number     | string       | yes(unique) | -          | -          | Bike license number                                            |
-| owner              | ObjectId     | yes         | -          | -          | Reporting owner - ref: owners                                  |
-| color              | string       | yes         | -          | -          | Bike color                                                     |
-| type               | string(enum) | no          | -          | other      | Bike type: [ mountain \| road \| other ]                       |
-| description        | string       | no          | -          | -          | Bike description                                               |
-| theft_desc         | string       | no          | -          | -          | Theft description                                              |
-| last_known_address | string       | yes         | -          | -          | Bike last known address                                        |
-| status             | string(enum) | no          | -          | unassigned | Bike robbery case status: [ unassigned \| assigned \| solved ] |
-| officer            | ObjectId     | no          | -          | -          | Officer assigned to solve the case - ref: officers             |
-| created_at         | number       | no          | -          | -          | Creation timestamp                                             |
+| Field                  | Type         | Required    | Validation | Default    | Description                                                                                |
+| ---------------------- | ------------ | ----------- | ---------- | ---------- | ------------------------------------------------------------------------------------------ |
+| date                   | date         | yes         | -          | -          | Bike robbery date                                                                          |
+| license_number         | string       | yes(unique) | -          | -          | Bike license number                                                                        |
+| owner                  | ObjectId     | yes         | -          | -          | Reporting owner - ref: owners                                                              |
+| color                  | string       | yes         | -          | -          | Bike color                                                                                 |
+| type                   | string(enum) | no          | -          | other      | Bike type: [ mountain \| road \| other ]                                                   |
+| description            | string       | no          | -          | -          | Bike description                                                                           |
+| theft_desc             | string       | no          | -          | -          | Theft description                                                                          |
+| last_known_address     | string       | yes         | -          | -          | Bike last known address                                                                    |
+| last_known_coordinates | GeoJSON      | no          | -          | -          | Bike last known address coordinates fetched from [Geoapify](https://apidocs.geoapify.com/) |
+| status                 | string(enum) | no          | -          | unassigned | Bike robbery case status: [ unassigned \| assigned \| solved ]                             |
+| officer                | ObjectId     | no          | -          | -          | Officer assigned to solve the case - ref: officers                                         |
+| created_at             | number       | no          | -          | -          | Creation timestamp                                                                         |
 
 <br/>
 Bikes data transfer objects to list bikes:
