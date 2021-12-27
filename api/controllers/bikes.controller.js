@@ -161,8 +161,14 @@ const buildSearchObject = (query) => {
   if (query.color) searchObject.color = query.color
   if (query.type) searchObject.type = query.type
   if (query.date) searchObject.date = query.date
-  if (query.address) searchObject.address = query.address
-  if (query.status) searchObject.status = query.status
+  if (query.address) searchObject.last_known_address = query.address
+  if (query.status) {
+    searchObject.$text = {
+      $search: query.status,
+      $caseSensitive: false,
+      $diacriticSensitive: false,
+    }
+  }
 
   return searchObject
 }
@@ -202,10 +208,13 @@ const buildBikeDTO = (bike) => {
  */
 const findBikesByOwnerAsync = async (query, limit, skip) => {
   try {
-    const queryName = query['owner-name'] ? 'name' : 'surname'
     const owners = await OwnersModel.find(
       {
-        [queryName]: query[`owner-${queryName}`],
+        $text: {
+          $search: query['owner-names'],
+          $caseSensitive: false,
+          $diacriticSensitive: false,
+        },
       },
       { name: 1 }
     )
@@ -226,11 +235,15 @@ const findBikesByOwnerAsync = async (query, limit, skip) => {
       .lean()
 
     const bikes = owners.reduce((acc, currentOwner) => {
-      const bikes = currentOwner.bikes.map((bike) => ({
-        ...bike,
-        owner: { _id: currentOwner._id, name: currentOwner.name },
-      }))
-      return [...acc, ...bikes]
+      if (currentOwner.bikes) {
+        const bikes = currentOwner.bikes.map((bike) => ({
+          ...bike,
+          owner: { _id: currentOwner._id, name: currentOwner.name },
+        }))
+        return [...acc, ...bikes]
+      }
+
+      return acc
     }, [])
 
     return bikes
@@ -248,9 +261,14 @@ const findBikesByOwnerAsync = async (query, limit, skip) => {
  */
 const findBikesByOfficerAsync = async (query, limit, skip) => {
   try {
+    console.log('findBikesByOfficerAsync')
     const officers = await OfficersModel.find(
       {
-        name: query['officer-name'],
+        $text: {
+          $search: query['officer-names'],
+          $caseSensitive: false,
+          $diacriticSensitive: false,
+        },
       },
       { name: 1 }
     )
@@ -269,20 +287,25 @@ const findBikesByOfficerAsync = async (query, limit, skip) => {
       .skip(skip)
       .limit(limit)
       .lean()
+    console.log(officers)
 
     const bikes = officers.reduce((acc, currentOfficer) => {
-      const bike = {
-        ...currentOfficer.bike,
-        officer: {
-          _id: currentOfficer._id,
-          name: currentOfficer.name,
-          department: {
-            _id: currentOfficer.department._id,
-            name: currentOfficer.department.name,
+      if (currentOfficer.bike) {
+        const bike = {
+          ...currentOfficer.bike,
+          officer: {
+            _id: currentOfficer._id,
+            name: currentOfficer.name,
+            department: {
+              _id: currentOfficer.department._id,
+              name: currentOfficer.department.name,
+            },
           },
-        },
+        }
+        return [...acc, bike]
       }
-      return [...acc, bike]
+
+      return acc
     }, [])
 
     return bikes
@@ -308,9 +331,9 @@ exports.getBikesSearchDTOs = async (req, res) => {
     }
 
     let bikes
-    if (req.query['owner-name'] || req.query['owner-surname']) {
+    if (req.query['owner-names']) {
       bikes = await findBikesByOwnerAsync(req.query, limit, skip)
-    } else if (req.query['officer-name']) {
+    } else if (req.query['officer-names']) {
       bikes = await findBikesByOfficerAsync(req.query, limit, skip)
     } else {
       const searchObject = buildSearchObject(req.query)
