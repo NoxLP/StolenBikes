@@ -5,6 +5,7 @@ const OfficersModel = require('../models/police_officers.model')
 const DepartmentsModel = require('../models/departments.model')
 const { handleError } = require('../utils')
 const { sendEmailToOwnerBikeStatusChanged } = require('../utils/emails')
+const { getAddressCoordinates } = require('../utils/geoapify')
 
 exports.reportStolenBike = async (req, res) => {
   try {
@@ -19,10 +20,19 @@ exports.reportStolenBike = async (req, res) => {
         license_number: req.body.license_number,
       })
       if (!bike) {
-        bike = new BikesModel({
+        const bikeData = {
           ...req.body,
           owner: res.locals.owner._id,
-        })
+        }
+        if (req.body.last_known_address) {
+          const coordinates = await getAddressCoordinates(
+            req.body.last_known_address
+          )
+
+          if (coordinates) bikeData.last_known_coordinates = coordinates
+        }
+
+        bike = new BikesModel(bikeData)
       } else if (bike && bike.status == 'solved') {
         bike.status = 'unassigned'
         bike.date = req.body.date ?? bike.date
@@ -33,8 +43,16 @@ exports.reportStolenBike = async (req, res) => {
         bike.color = req.body.color ?? bike.color
         bike.description = req.body.description ?? bike.description
         bike.theft_desc = req.body.theft_desc ?? bike.theft_desc
-        bike.last_known_address =
-          req.body.last_known_address ?? bike.last_known_address
+
+        if (req.body.last_known_address) {
+          bike.last_known_address = req.body.last_known_address
+
+          const coordinates = await getAddressCoordinates(
+            req.body.last_known_address
+          )
+
+          if (coordinates) bike.last_known_coordinates = coordinates
+        }
       } else {
         return handleError('already reported bike assigned', res)
       }
