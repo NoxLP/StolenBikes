@@ -1,5 +1,17 @@
 const mongoose = require('mongoose')
 
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['Point'],
+    required: true,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+})
+
 const bikesSchema = new mongoose.Schema({
   date: {
     type: Date,
@@ -34,6 +46,9 @@ const bikesSchema = new mongoose.Schema({
   last_known_address: {
     type: String,
     required: [true, 'Last known address is required'],
+  },
+  last_known_coordinates: {
+    type: pointSchema,
   },
   status: {
     type: String,
