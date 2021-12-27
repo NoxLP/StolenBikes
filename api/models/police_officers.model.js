@@ -9,7 +9,10 @@ const policeOfficersSchema = new mongoose.Schema({
   },
   surname: {
     type: String,
-    required: [true, 'Name is required'],
+    required: [true, 'Surname is required'],
+  },
+  search_names: {
+    type: String,
   },
   email: {
     type: String,
@@ -53,8 +56,32 @@ const policeOfficersSchema = new mongoose.Schema({
   },
 })
 
+/**
+ * This will add search_name and search_surname to a document every time
+ * the document will be saved.
+ * Partial searches must be done through this fields, nor with original ones,
+ * see createEdgeNGrams function at utils/index.js.
+ * Note that with mongoose update functions, only updateOne will do it right,
+ * with the rest (findOneAndUpdate, findByIdAnd...) 'this' is not the document,
+ * but the query itself, therefore it could be bad...
+ * It's ok for the scope of this API because I'm only using the wrong functions
+ * with departments resource, but it's something that everyone developing the
+ * API should be aware of, or to be taken care of here.
+ */
+policeOfficersSchema.pre('save', function (next) {
+  try {
+    this.search_names = createEdgeNGrams(this.name + ' ' + this.surname)
+  } catch (err) {
+    // catch this and simply log it... I don't have the time to test this
+    // thouroughly, so just ensure this will not shut down the server because
+    // an unhandled exception
+    console.log('>>> owners pre save ERROR:', err)
+  }
+  next()
+})
+
 // compound text index
-policeOfficersSchema.index({ name: 'text', surname: 'text' })
+policeOfficersSchema.index({ search_names: 'text' })
 
 /**
  * Get police officer profile to send to front-end
