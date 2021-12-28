@@ -132,8 +132,7 @@ exports.reportStolenBike = async (req, res) => {
       await Promise.all([bike.save(), owner.save()])
       await session.commitTransaction()
 
-      // Just fire and forget the email
-      sendEmailToOwnerBikeStatusChanged(owner, bike)
+      await sendEmailToOwnerBikeStatusChanged(owner, bike)
       return res
         .status(200)
         .json({ msg: 'bike created but NOT assigned', bike })
