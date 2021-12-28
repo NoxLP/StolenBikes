@@ -2,6 +2,18 @@
 
 StolenBikes back-end API for Advance Digital Experts challenge.
 
+There's a [folder in google drive](https://drive.google.com/drive/folders/1Crou1Sr6_FYvatt0SJb_8SqgSNmPbn6W?usp=sharing) with some info like data model, endpoints planning, and other things.
+
+I've prepared a public workspce on [postman](https://www.postman.com/noxLP/workspace/stolenbikes/overview) with endpoints and documentation.
+
+For getting the coordinates of the reported stolen bikes I've used [Geoapify](https://www.geoapify.com/), since google geocoding and google maps are not free.
+
+For sending emails I've used [SendGrid](https://sendgrid.com/).
+
+Used [clickup](https://sharing.clickup.com/b/h/6-146688265-2/911957a1ee9e048) as kanban. A screenshot of the original kanban is in the google drive folder.
+
+The production and development databases are uploaded to a MongoDB Atlas account created specifically for this and linked to a google account. I'll pass the login info by email.
+
 ## Installation and local run
 
 The API is uploaded to heroku on:
@@ -11,7 +23,7 @@ The API is uploaded to heroku on:
 
 Can check the server is running on endpoint `/status`.
 
-Dev and production databases have been created at Mongo Atlas, I'll pass .env files for both by email.
+Dev and production databases have been created at Mongo Atlas, I'll pass .env files by email.
 
 Also, if you want to run it all locally I've used [run-rs](https://www.npmjs.com/package/run-rs) package, which will download and install a local MongoDB replica set(mongoose transactions need a replica set) independent from any other mongo installation you could have in your computer (won't overwrite a thing). Although I haven't been able to use the seeding script this way, so you'd need to run the seeding script manually once run-rs mongo database is running.
 
