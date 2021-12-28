@@ -9,7 +9,8 @@ async function sendEmailAsync(to, subject, htmlBody) {
       subject: subject,
       html: htmlBody,
     }
-    await sgMail.send(msg)
+    const mail = await sgMail.send(msg)
+    console.log('>>> sent email: ', mail)
   } catch (error) {
     if (error.response) {
       throw error.response.body

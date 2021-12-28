@@ -407,6 +407,10 @@ exports.caseSolved = async (req, res) => {
       )
 
       await session.commitTransaction()
+
+      // Just fire and forget the email
+      const owner = await OwnersModel.findById(bike.owner)
+      sendEmailToOwnerBikeStatusChanged(owner, bike)
       return res.status(200).json({ newAssignedBike })
     } catch (err) {
       throw err
