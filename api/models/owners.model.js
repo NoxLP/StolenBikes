@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const Bikes = require('./bikes.model')
-const { createEdgeNGrams } = require('../utils/index')
 
 const ownersSchema = new mongoose.Schema({
   name: {
@@ -70,6 +69,8 @@ const ownersSchema = new mongoose.Schema({
  */
 ownersSchema.pre('save', function (next) {
   try {
+    // This function use its own scope, import function in function's scope
+    const { createEdgeNGrams } = require('../utils')
     this.search_names = createEdgeNGrams(this.name + ' ' + this.surname)
   } catch (err) {
     // catch this and simply log it... I don't have the time to test this

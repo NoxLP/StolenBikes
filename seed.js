@@ -73,7 +73,7 @@ const data = [
         police_license_number: '358467A',
         role: 'regular',
         department: robberyDepartmentId,
-        search_names: createEdgeNGrams('Jose Santana Dominguez'),
+        search_names: 'Jose Santana Dominguez',
       },
       {
         _id: robberyAdminId,
@@ -84,7 +84,7 @@ const data = [
         police_license_number: '358621B',
         role: 'admin',
         department: robberyDepartmentId,
-        search_names: createEdgeNGrams('Pedro Rodríguez Arcas'),
+        search_names: 'Pedro Rodríguez Arcas',
       },
       {
         _id: crimeOfficerId,
@@ -95,7 +95,7 @@ const data = [
         police_license_number: '354127G',
         role: 'regular',
         department: crimeDepartmentId,
-        search_names: createEdgeNGrams('María Pérez Santana'),
+        search_names: 'María Pérez Santana',
       },
     ],
   },
